@@ -7,7 +7,7 @@ const openai = new OpenAI({
 });
 const createText = async (universname, promptText) => {
     const response = await openai.completions.create({
-        model: "text-ada-001", // "gpt-3.5-turbo-instruct", // "text-davinci-003"
+        model:  "text-davinci-003", //"gpt-3.5-turbo-instruct"
         prompt: promptText + universname,
         temperature: 1,
         max_tokens: 256,
@@ -20,21 +20,21 @@ const createText = async (universname, promptText) => {
 }
 
 exports.createUniversDescription = async (universname) => {
-    const promptText = "générer une description pour l'univers ";
+    const promptText = "Fais moi un description de l'univers de ${universname}. Son époque, son histoire et ses spécificités. ";
     return createText(universname, promptText);
 }
 
 exports.createPromptUnivers = async (universname) => {
-    const promptText = "générer un prompt pour cet univers ";
+    const promptText = "Ecris moi un prompt pour générer une image avec l'intelligence artificielle Text-to-image nommé StableDiffusion afin de représenter l'univers ${universname}. Le prompt doit etre en anglais et ne pas dépasser 300 caractères  ";
     return createText(universname, promptText);
 }
 exports.createCharacterDescription = async (charactername) => {
-    const promptText = "générer une description pour character ";
+    const promptText = "Fais moi une description du personnage ${charactername}. Donne moi son histoire, sa personnalité et ses spécificités ";
     return createText(charactername, promptText);
 }
 
 exports.createPromptCharacter = async (charactername) => {
-    const promptText = "générer un prompt pour cet character ";
+    const promptText = "Ecris moi un prompt pour générer une image avec l'intelligence artificielle Text-to-image nommé StableDiffusion afin de représenter le personnage ${charactername} . Le prompt doit etre en anglais et ne pas dépasser 300 caractères";
     return createText(charactername, promptText);
 }
 

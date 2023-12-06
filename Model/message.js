@@ -1,6 +1,6 @@
 class Message {
-    constructor(ID,content, conversation_id,role,create_at) {
-        this.id = ID;
+    constructor(id,content, conversation_id,role,create_at) {
+        this.id = id;
         
         this.content = content;
         this.conversation_id= conversation_id;
@@ -22,7 +22,14 @@ class Message {
     }
 
     static fromMap(map) {
-        return new Message(map.ID, map.content,map.conversation_id, map.role, map.create_at);
+        console.log('Mapping from', map);
+        return new Message(
+            map.id || null,
+            map.content || null,
+            map.conversation_id || null,
+            map.role || null,
+            map.create_at || null
+        );
     }
 }
 

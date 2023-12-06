@@ -24,22 +24,26 @@ exports.createConversation = (req, res) => {
 
 exports.deleteConversationByIdCharactere = (req, res) => {
   const conversationId = req.params.character_id;
-  if (!conversationId) {
-      return res.status(400).json({ error: "ID de conversation manquant" });
-  }
-  const query = "DELETE FROM conversation WHERE character_id = ?";
-  db.query(query, [conversationId], (err, result) => {
-  
-      if (err) {
-          return res.status(500).json({ error: err });
-      }
+  const deleteQuery = `
+    DELETE message, conversation
+    FROM message
+    INNER JOIN conversation ON message.conversation_id = conversation.ID
+    WHERE conversation.character_id = ?;
+  `;
 
-      if (result.affectedRows === 0) {
-          return res.status(404).json({ error: "La conversation avec l'ID spécifié n'existe pas" });
-      }
-      res.status(204).send();
+  db.query(deleteQuery, [conversationId], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "La conversation n'existe pas" });
+    }
+
+    res.status(204).send();
   });
 };
+
 
 exports.getConversations = (req, res) => {
   const userId = req.user.id;
