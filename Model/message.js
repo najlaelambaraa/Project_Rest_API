@@ -22,7 +22,7 @@ class Message {
     }
 
     static fromMap(map) {
-        console.log('Mapping from', map);
+        
         return new Message(
             map.id || null,
             map.content || null,

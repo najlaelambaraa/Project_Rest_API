@@ -9,12 +9,15 @@ const openai = new OpenAI({
 });
 exports.newMessage = async (req, res) => {
     const { role, content } = req.body; 
+    
     const conversationId = req.params.conversationId;
     req.body.conversation_id = conversationId;
-    const message = Message.fromMap(req.body);
     
-
+    console.log("req bosy",req.body)
+    
+    const message = Message.fromMap(req.body);
     message.conversationId = conversationId; 
+    
     const query="INSERT INTO message (content,conversation_id,role) VALUES (?, ?, ?)"
      
     db.query(query, [message.content,message.conversation_id,message.role], (err, result) => {
