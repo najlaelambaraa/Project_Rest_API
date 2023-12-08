@@ -177,7 +177,7 @@ exports.regenerateAssistantMessage = async (req, res) => {
               return res.status(500).json({ error: insertErr });
             }
 
-            return res.status(201).json({ message: newAssistantMessageObj.toMap(), status: "Nouveau message d'assistant créé" });
+            return res.status(200).json({ message: newAssistantMessageObj.toMap(), status: "Nouveau message d'assistant créé" });
           });
         });
       } catch (error) {

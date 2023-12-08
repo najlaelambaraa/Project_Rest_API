@@ -2,25 +2,26 @@ const Univers = require('../Model/univers');
 const db = require('../database');
 const openAI = require('../Model/openAI');
 const stableImage = require('../Model/stableImage');
-const fs = require("fs");
 require("dotenv").config();
+
 exports.getAllUnivers = (req, res) => {
-    let query = "SELECT * FROM univers";
-    db.query(query, (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err });
-      } else {
-        let univers = [];
-        for (let row of rows) {
-          let univer = Univers.fromMap(row);
-  
-          univers.push(univer.toMap());
-        }
-  
-        res.status(200).json(univers);
-      }
-    });
+  const query = "SELECT * FROM univers";
+
+  db.query(query, (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (!rows || rows.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    const univers = rows.map(row => Univers.fromMap(row).toMap());
+
+    res.status(200).json(univers);
+  });
 };
+
 
 exports.createUniver = async (req, res) => {
   const universeName = req.body.name;
@@ -38,16 +39,17 @@ exports.createUniver = async (req, res) => {
 
     db.query(query, [universe.name, universe.description, universe.imagePath], (err, result) => {
       if (err) {
-        res.status(500).json({ error: err });
-      } else {
-        universe.id = result.insertId;
-        res.status(201).json(universe.toMap());
+        return res.status(500).json({ error: err });
       }
+
+      universe.id = result.insertId;
+      res.status(200).json(universe.toMap());
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
+
 
 
 exports.getUniverById = (req, res) => {
@@ -61,7 +63,7 @@ exports.getUniverById = (req, res) => {
       }
 
       if (rows.length === 0) {
-          res.status(404).json({ error: "Utilisateur non trouvé" });
+          res.status(404).json({ error: "univers non trouvé" });
           return;
       }
 
@@ -72,21 +74,21 @@ exports.getUniverById = (req, res) => {
 
 
 exports.updateUniverById = (req, res) => {
-    const univerId = req.params.id; 
-    const updatedUniverData = req.body; 
-    const query = "UPDATE univers SET nom = ?, description = ?, image = ? WHERE id = ?";
+  const univerId = req.params.id; 
+  const updatedUniverData = req.body; 
+  const query = "UPDATE univers SET nom = ?, description = ?, image = ? WHERE id = ?";
 
-    db.query(query, [updatedUniverData.name,updatedUniverData.description,updatedUniverData.image, univerId], (err, result) => {
-        if (err) {
-            res.status(500).json({ error: err });
-        } else {
-            if (result.affectedRows === 0) {
-                res.status(404).json({ error: "Utilisateur non trouvé" });
-            } else {
-                res.status(204).send(); 
-            }
-        }
-    });
+  db.query(query, [updatedUniverData.name, updatedUniverData.description, updatedUniverData.image, univerId], (err, result) => {
+      if (err) {
+          return res.status(500).json({ error: err });
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ error: "Univer non trouvé" });
+      }
+
+      res.status(200).send(); 
+  });
 };
 
 
@@ -94,21 +96,30 @@ exports.deleteUniverseById = (req, res) => {
   const universeId = req.params.universeId;
 
   const deleteQuery = `
-    DELETE personnages, univers
-    FROM personnages
-    INNER JOIN univers ON personnages.id_univers = univers.id
-    WHERE univers.id = ?;
+    DELETE FROM univers
+    WHERE id = ?;
   `;
 
   db.query(deleteQuery, [universeId], (err, result) => {
     if (err) {
-      res.status(500).json({ error: err });
-    } else {
-      if (result.affectedRows === 0) {
-        res.status(404).json({ error: "Univers non trouvé" });
-      } else {
-        res.status(204).send();
-      }
+      return res.status(500).json({ error: err });
     }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Univers non trouvé" });
+    }
+
+    const deleteCharactersQuery = `
+      DELETE FROM personnages
+      WHERE id_univers = ?;
+    `;
+
+    db.query(deleteCharactersQuery, [universeId], (charactersErr, charactersResult) => {
+      if (charactersErr) {
+        return res.status(500).json({ error: charactersErr });
+      }
+
+      res.status(200).send();
+    });
   });
 };

@@ -1,28 +1,24 @@
 const Characters = require('../Model/characters'); 
-
 const openAI = require('../Model/openAI');
 const db = require('../database');
 const stableImage = require('../Model/stableImage');
 
 exports.getCharactersById = (req, res) => {
-    const universId = req.params.id; 
+    const universId = req.params.id;
     const query = "SELECT * FROM personnages WHERE id_univers = ?";
 
     db.query(query, [universId], (err, rows) => {
         if (err) {
-            res.status(500).json({ error: err });
-        } else {
-            if (rows.length === 0) {
-                res.status(404).json({ error: "Personnage non trouvé" });
-            } else {
-                let personnages = [];
-                for (let row of rows) {
-                    let personnage = Characters.fromMap(row);
-                    personnages.push(personnage.toMap());
-                }
-                res.status(200).json(personnages);
-            }
+            return res.status(500).json({ error: err });
         }
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "Personnage non trouvé" });
+        }
+
+        const personnages = rows.map(row => Characters.fromMap(row).toMap());
+
+        res.status(200).json(personnages);
     });
 };
 
@@ -48,7 +44,7 @@ exports.createCharacter = async (req, res) => {
           res.status(500).json({ error: err });
         } else {
             character.id = result.insertId;
-          res.status(201).json(character.toMap());
+          res.status(200).json(character.toMap());
         }
       });
     } catch (error) {
@@ -58,38 +54,65 @@ exports.createCharacter = async (req, res) => {
 
 
 exports.updateCharactersById = (req, res) => {
-    const univerId = req.params.univerId; 
+    const univerId = req.params.univerId;
     const charactersId = req.params.charactersId;
-    const updatedCharactersData = req.body; 
-    const query = "UPDATE personnages SET name = ?, description = ?, image = ? WHERE id_univers = ? and id = ?";
+    const updatedCharactersData = req.body;
+    
+    let query = "UPDATE personnages SET";
+    const values = [];
 
-    db.query(query, [updatedCharactersData.name,updatedCharactersData.description,updatedCharactersData.image, univerId,charactersId], (err, result) => {
+    if (updatedCharactersData.name) {
+        query += " name = ?,";
+        values.push(updatedCharactersData.name);
+    }
+
+    if (updatedCharactersData.description) {
+        query += " description = ?,";
+        values.push(updatedCharactersData.description);
+    }
+
+    if (updatedCharactersData.image) {
+        query += " image = ?,";
+        values.push(updatedCharactersData.image);
+    }
+
+    if (values.length > 0) {
+        query = query.slice(0, -1);
+    } else {
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour" });
+    }
+
+    query += " WHERE id_univers = ? and id = ?";
+    values.push(univerId, charactersId);
+    db.query(query, values, (err, result) => {
         if (err) {
-            res.status(500).json({ error: err });
-        } else {
-            if (result.affectedRows === 0) {
-                res.status(404).json({ error: "Characters non trouvé" });
-            } else {
-                res.status(204).send(); 
-            }
+            return res.status(500).json({ error: err });
         }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Personnage non trouvé" });
+        }
+
+        res.status(200).send();
     });
 };
+
+
 exports.deleteCharacterById = (req, res) => {
     const universId = req.params.univerId;
     const charactersId = req.params.charactersId;
 
-    const query = "DELETE FROM personnages WHERE id_univers = ? AND id = ?";
+    const deleteQuery = "DELETE FROM personnages WHERE id_univers = ? AND id = ?";
 
-    db.query(query, [universId, charactersId], (err, result) => {
+    db.query(deleteQuery, [universId, charactersId], (err, result) => {
         if (err) {
-            res.status(500).json({ error: err });
-        } else {
-            if (result.affectedRows === 0) {
-                res.status(404).json({ error: "Personnage non trouvé" });
-            } else {
-                res.status(204).send();
-            }
+            return res.status(500).json({ error: err });
         }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Personnage non trouvé" });
+        }
+
+        res.status(200).send();
     });
 };
