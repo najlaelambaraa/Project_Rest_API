@@ -62,6 +62,9 @@ npm start
 ##  Utilisation
  - Assurez-vous que l'application est en cours d'exécution.
  - Utilisez Postman pour effectuer des requêtes HTTP à l'API.
+ - Pour se connecter, utilisez la route `/auth` en fournissant le `username` et `password` dans le corps de la requête. En retour, vous recevrez un jeton JWT qui doit être inclus dans le 
+le type d'authentification comme `Bearer token` et fournissez le jeton généré à chaque requête sur les autres routes, ce jeton expire après 30 minutes.
+
    
 
 | Methodes               | URL                     | ACTION                |
