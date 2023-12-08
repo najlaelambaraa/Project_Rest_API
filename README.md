@@ -81,7 +81,7 @@ npm start
 | PUT                     | /universes/:univerId/characters/:charactersId | Modification d'un personnage dans un univers |
 | DELETE                  | /universes/:univerId/characters/:charactersId | Suppression d'un personnage dans un univers |
 | GET                     | /conversations          | Récupération des conversations en cours  |
-| POST                    | /conversations          | Création d'une nouvelle conversation avec un personnage |
+| POST                    | /conversations          | Création d'une nouvelle conversation avec un personnage id et user id  |
 | GET                     | /conversations/:conversationId  | Récupération d'une conversation avec le personnage et l'univers complet |
 | DELETE                  | /conversation/:character_id        | Suppression d'une conversation avec un personnage |
 | GET                     | /conversations/:conversationId/messages | Récupération de l'historique des messages d'une conversation |
