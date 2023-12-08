@@ -16,7 +16,7 @@ Cette application backend, construite avec Node.js et le framework Express, cons
     git clone https://github.com/najlae-lambaraa/Project_Rest_API
     cd Project_Rest_API
     ```
-2. **Accédez au répertoire du projet **:
+2. **Accédez au répertoire du projet**:
 
     ```bash
     cd Project_Rest_API
@@ -60,9 +60,8 @@ npm start
 ```
 - L'application sera accessible à l'adresse http://localhost:8080.
 ##  Utilisation
-
-    - Assurez-vous que l'application est en cours d'exécution.
-    - Utilisez Postman pour effectuer des requêtes HTTP à l'API.
+ - Assurez-vous que l'application est en cours d'exécution.
+ - Utilisez Postman pour effectuer des requêtes HTTP à l'API.
    
 
 | Methodes               | URL                     | ACTION                |
