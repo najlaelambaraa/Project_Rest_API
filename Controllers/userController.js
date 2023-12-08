@@ -1,6 +1,5 @@
 const User = require('../Model/user'); 
 const db = require('../database')
-const authMiddleware = require('../Middleware/checkToken');
 const bcrypt = require('bcrypt');
 
 exports.getAllUsers = (req, res) => {

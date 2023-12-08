@@ -51,13 +51,13 @@ exports.newMessage = async (req, res) => {
 
       for (let index = 0;index < dbMesages.length; index ++) {
         let prefix =""
-        //console.log(dbMesages[0][index])
+        
         let message = Message.fromMap(dbMesages[0][index]);
-        //console.log(message)
+        
         if(index ==0){
           prefix =`Dans l'univers de ${universName}, incarne le personnage ${personnageName}. ${universeDescription}\n\nRéponds directement comme si tu étais le personnage sans confirmer que tu as bien compris.\n---\n`;   
           messages.push({role : message.role,content : prefix + message.content});
-          //console.log(prefix)
+          
         }
       }
    

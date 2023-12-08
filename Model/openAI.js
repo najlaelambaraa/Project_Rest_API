@@ -7,7 +7,7 @@ const openai = new OpenAI({
 });
 const createText = async (universname, promptText) => {
     const response = await openai.completions.create({
-        model:  "text-davinci-003", //"gpt-3.5-turbo-instruct"
+        model:  "gpt-3.5-turbo-instruct", 
         prompt: promptText + universname,
         temperature: 1,
         max_tokens: 256,
